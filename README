@@ -1,0 +1,29 @@
+--------------------
+Project: FlexiSiteCopy
+--------------------
+Version: 0.9
+Released: Mar 9, 2011
+Since: Mar 9, 2011
+Author: James Tan <james@mercstudio.com>
+
+A general purpose flexible utility to copy database from 1 site to another.
+Currently tested on MODx 2 and standalone database.
+Allow modification on data before inserting remote data
+
+Instructions/HowTo?:
++ FTP/copy FlexiSiteCopy directory to remote site.
+Example: /public_html/FlexiSiteCopy
++ Duplicate modx.php, and modify parameter accordingly
+Example: $remoteurl = "http://www.copyfromdomain.com/FlexiSiteCopy/remote.php";
++ You may comment off these line for copy all function, without skipping rows
+//$remoting->addEvent("save", "onModx2Save");
+//$remoting->addEvent("before_copydata", "onModx2CopyData");
++ But as for MODx Revo, you will need these line for the local copy to work.
+
+
+For MODx Revo, 
+after copying data from remote,
+login to manager and clear cache.
+Remember to copy the files from remote.
+For more information on MODx Site Copy:
++ http://mercstudio-tech.blogspot.com/2010/10/modx2-deployment.html
