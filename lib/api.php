@@ -8,7 +8,9 @@ ini_set('memory_limit', '80M');
  *  output format: json
  * @author James
  */
-define("ENCRYPTION_KEY", "SADFo92jzVs32j39IUYGvi6eL8v6");
+if (!defined("ENCRYPTION_KEY")) {
+  define("ENCRYPTION_KEY", "SADFo92jzVs32j39IUYGvi6eL8v6");
+}
 if (! function_exists("json_encode")) {
   die("JSON module not installed");
 }
@@ -51,6 +53,15 @@ function doRequest() {
       case "getcreate":
         doGetCreate(getReq("table"), getReq("exclude", ""));
         break;
+      case "getip":
+        doGetIP(getReq("name"));
+        break;
+      case "updateip":
+        doUpdateIP(getReq("name"), getReq("pass"), getReq("ip"));
+        break;
+      case "getmyip":
+        doGetMyIP();
+        break;
       default:
         throw new Exception("Unknown action: " . $action);
     }
@@ -60,8 +71,63 @@ function doRequest() {
   
 }
 
+function doGetMyIP() {
+  return returnResult(getenv("REMOTE_ADDR"));
+}
 
 //======BEGIN ACTIONS=========
+
+function doGetIP($sName) {
+  $sName = preg_replace("/[^a-zA-Z0-9]/", "", $sName);
+  if (empty($sName)) {
+    return returnError("Invalid namelength");
+  }
+  $sFile = dirname(dirname(__FILE__)) . "/ip/config." . $sName . ".php";
+
+  if (!file_exists($sFile)) {
+    return returnError("No ip available");
+  }
+  require($sFile);
+  return returnResult($ip);
+}
+
+/**
+ * update ip of a given name
+ * @param String $sName
+ */
+function doUpdateIP($sName, $asPass, $asIP) {
+  $sName = preg_replace("/[^a-zA-Z0-9]/", "", $sName);
+  if (empty($asPass) || empty($sName)) {
+    return returnError("Invalid name / password / ip length");
+  }
+  $sFile = dirname(dirname(__FILE__)) . "/ip/config." . $sName . ".php";
+
+  $sNewIP = empty($asIP) ? getenv("REMOTE_ADDR"): $asIP;
+  if (file_exists($sFile)) {
+    require($sFile);
+    if ($password != $asPass) {
+      return returnError("invalid password");
+    }
+  }
+
+  $sConfig = getVariableInPHPCode(array(
+    "name" => $sName,
+    "password" => $asPass,
+    "ip"    => $sNewIP
+  ));
+  file_put_contents($sFile, $sConfig);
+  return returnResult($sName);
+}
+
+function getVariableInPHPCode($aParam) {
+  $sResult = "<" . "?\n";
+  foreach($aParam as $sKey => $sValue) {
+    $sResult .= "$" . $sKey . " = \"" . str_replace("\"", "\\\"", $sValue) . "\";\n";
+  }
+  $sResult .= "?" . ">\n";
+  return $sResult;
+}
+
 /**
  * Get create table sql
  *  return result as array of [table => "sql",...]
@@ -173,6 +239,7 @@ function doList() {
 
 function encryptB64($text)
 {
+  //$bytesData =
   return trim(base64_encode(gzcompress(
     mcrypt_encrypt(MCRYPT_RIJNDAEL_256, ENCRYPTION_KEY, $text, MCRYPT_MODE_ECB,
             mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)
@@ -213,7 +280,7 @@ function returnResult($result, $msg = "") {
   return returnStatus(true, $result, $msg);
 }
 
-function returnError($msg, $trace) {
+function returnError($msg, $trace=false) {
   return returnStatus(false, null, $msg, $trace);
 }
 

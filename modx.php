@@ -1,5 +1,8 @@
 <?php
 
+//optional encryption key, to ensure security
+//define("ENCRYPTION_KEY", "MYMODXYOISLDHFLHKUDGKFIDCBJ");
+
 require_once(dirname(__FILE__) . "/lib/remotecopy.php");
 
 echo "<br/>\n===BEGIN [SITENAME] MODX2====<br/>\n";

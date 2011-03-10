@@ -1,11 +1,18 @@
 --------------------
-Project: FlexiSiteCopy
+Project: FlexiSite
 --------------------
-Version: 0.9
-Released: Mar 9, 2011
+Version: 0.9.1
+Released: Mar 10, 2011
 Since: Mar 9, 2011
 Author: James Tan <james@mercstudio.com>
 
+This utilities have 2 functions:
+ + to copy database from remote to local server
+ + to update and retrieve ip of a given name to the remote server
+
+--------------------------------------------
+* Copy database from remote to local server
+--------------------------------------------
 A general purpose flexible utility to copy database from 1 site to another.
 Currently tested on MODx 2 and standalone database.
 Allow modification on data before inserting remote data.
@@ -20,7 +27,7 @@ Example: $remoteurl = "http://www.copyfromdomain.com/FlexiSiteCopy/remote.php";
 //$remoting->addEvent("save", "onModx2Save");
 //$remoting->addEvent("before_copydata", "onModx2CopyData");
 + But as for MODx Revo, you will need these line for the local copy to work.
-
++ php yourfilename.php (duplicated from modx.php)
 
 For MODx Revo, 
 after copying data from remote,
@@ -28,3 +35,24 @@ login to manager and clear cache.
 Remember to copy the files from remote.
 For more information on MODx Site Copy:
 + http://mercstudio-tech.blogspot.com/2010/10/modx2-deployment.html
+
+
+--------------------------------------------
+* Update and retrieve ip of a given name to the remote server
+--------------------------------------------
+A general purpose flexible utility to update ip of a dynamic location.
+First time call, will save a dedicated password which will be used for later call for update
+
+Instructions/HowTo?:
++ FTP/copy FlexiSiteCopy directory to remote site.
+Example: /public_html/FlexiSiteCopy
++ Duplicate remoteip.php, and modify parameter accordingly
+Example: $remoteurl = "http://www.copyfromdomain.com/FlexiSiteCopy/remote.php";
++ Leave 3rd parameter to updateip blank to auto get caller internet ip
++ php yourfilename.php (duplicated from remoteip.php)
+
+--------------------------------------------
+
+Change-log 0.91:
++ Added remote IP update functionality
++ Renamed to FlexiSite
