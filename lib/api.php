@@ -78,7 +78,7 @@ function doGetMyIP() {
 //======BEGIN ACTIONS=========
 
 function doGetIP($sName) {
-  $sName = preg_replace("/[^a-zA-Z0-9]/", "", $sName);
+  $sName = preg_replace("/[^a-zA-Z0-9_\-]/", "", $sName);
   if (empty($sName)) {
     return returnError("Invalid namelength");
   }
@@ -96,7 +96,7 @@ function doGetIP($sName) {
  * @param String $sName
  */
 function doUpdateIP($sName, $asPass, $asIP) {
-  $sName = preg_replace("/[^a-zA-Z0-9]/", "", $sName);
+  $sName = preg_replace("/[^a-zA-Z0-9_\-]/", "", $sName);
   if (empty($asPass) || empty($sName)) {
     return returnError("Invalid name / password / ip length");
   }
