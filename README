@@ -54,11 +54,34 @@ Example: $remoteurl = "http://www.copyfromdomain.com/FlexiSiteCopy/remote.php";
 To access actual redirection:
 + http://[remoteurl]/FlexiSiteCopy/go/[name_for_ip]
 + You may change the code in go/index.php for custom port
++ You may add a file name "plugin.php" and put in function:
+  ++ onGetAlias($sName); //to return alias to file name
+  ++ onGetURL($sName, $ip, $sURL); //to replace url with other url or add port number / sub directory
+Example of plugin.php
+--------------
+//to replace path to config (optional)
+//$sPath = dirname(dirname(__FILE__)) . "/copysite/ip/config.";
+function onGetAlias($sName) {
+  if ($sName == "homecam") {
+    return "home";
+  }
+  return $sName;
+}
+
+function onGetURL($sName, $ip, & $sURL) {
+  if ($sName=="homecam") {
+    $sURL .=":8080";
+  }
+}
+--------------
+
 Note: .htaccess is in effect for this to work
 
 --------------------------------------------
 
 Change-log:
+0.9.3:
++ added plugin support for remote ip go
 0.9.2:
 + Added redirector go
 0.9.1:
