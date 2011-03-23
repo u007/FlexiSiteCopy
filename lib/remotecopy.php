@@ -76,7 +76,7 @@ class HandyRemoteCopy {
   public function doCopyData($sTable, $bTruncate = false, $iStart=0, $iMax=null, $iBufferRow = 500) {
     $oLocalDB = &$this->oLocalDB;
     
-    $aEvent = $this->aEvent["before_copydata"];
+    $aEvent = isset($this->aEvent["before_copydata"]) ? $this->aEvent["before_copydata"]: array();
     foreach($aEvent as $callback) {
       if (! call_user_func($callback, $sTable)) {
         return; //skipping data copy
@@ -98,10 +98,10 @@ class HandyRemoteCopy {
           $aRow[$c] = utf8_decode($aRow[$c]);
         }
         //calling event hooks
-        $aEvent = $this->aEvent["save"];
+        $aEvent = isset($this->aEvent["save"])? $this->aEvent["save"]: array();
         $aSaveData = array_combine($aHeader, $aRow);
         foreach($aEvent as $callback) {
-          call_user_func($callback, "insert", $sTable, & $aSaveData);
+          call_user_func($callback, "insert", $sTable, $aSaveData);
         }
         //if is null, do not insert
         if (! is_null($aSaveData)) {
