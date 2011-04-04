@@ -1,7 +1,7 @@
 --------------------
 Project: FlexiSite
 --------------------
-Version: 0.9.3
+Version: 0.9.4
 Released: Mar 10, 2011
 Since: Mar 9, 2011
 Author: James Tan <james@mercstudio.com>
@@ -80,6 +80,8 @@ Note: .htaccess is in effect for this to work
 --------------------------------------------
 
 Change-log:
+0.9.4:
++ fix bug
 0.9.3:
 + added plugin support for remote ip go
 0.9.2:
