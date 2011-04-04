@@ -101,7 +101,11 @@ class HandyRemoteCopy {
         $aEvent = isset($this->aEvent["save"])? $this->aEvent["save"]: array();
         $aSaveData = array_combine($aHeader, $aRow);
         foreach($aEvent as $callback) {
-          call_user_func($callback, "insert", $sTable, $aSaveData);
+          if (version_compare(PHP_VERSION, '5.3.0')>=0) {
+            call_user_func($callback, "insert", $sTable, &$aSaveData);
+          } else {
+            call_user_func($callback, array("insert", $sTable, &$aSaveData));
+          }
         }
         //if is null, do not insert
         if (! is_null($aSaveData)) {
