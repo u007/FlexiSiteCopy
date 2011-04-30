@@ -42,7 +42,10 @@ class HandyRemoteCopy {
       HandyLogger::debug(__METHOD__ . ": " . $sCreate);
       $oLocalDB->dropTable($sTable);
       $oLocalDB->getDBQuery($sCreate);
-      self::doCopyData($sTable, true);
+      //only copydata if is table
+      if (substr($sCreate,0,12) == "CREATE TABLE") {
+        self::doCopyData($sTable, true);
+      }
       HandyLogger::info(__METHOD__ . ": Done:" . $sTable);
     }
     HandyLogger::info(__METHOD__ . ": Done All.");
