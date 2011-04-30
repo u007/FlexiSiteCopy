@@ -79,6 +79,17 @@ class HandyDB {
     return $this->getDBQuery($sql);
   }
 
+  public function dropView($sView) {
+    switch($this->dbtype) {
+      case "mysql":
+        $sql = "DROP VIEW IF EXISTS " . $this->delimitTable($sView);
+        break;
+      default:
+        throw new Exception("Unsupported type: " . $this->dbtpe);
+    }
+    return $this->getDBQuery($sql);
+  }
+
   public function truncate($sTable) {
     switch($this->dbtype) {
       case "mysql":
