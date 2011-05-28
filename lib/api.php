@@ -439,7 +439,7 @@ function _callRemote($sURL, $aaData=array(), $aaHeader=array()) {
   );
   //var_dump($sData);
   $context = stream_context_create($opts);
-  $sContent = file_get_contents($sURL, false, $context);
+  $sContent = @file_get_contents($sURL, false, $context);
   if ($sContent===false) {
     throw new Exception("CURL failed");
   }
