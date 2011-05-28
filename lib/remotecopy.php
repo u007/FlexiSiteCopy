@@ -134,7 +134,20 @@ class HandyRemoteCopy {
       "debug"   => $this->bDebug ? 1: 0
     );
     $aData = array_merge($aData, $params);
-    $oResult = callRemote($this->remoteurl, $aData);
+    
+    $iTry = 1; //try 3 times 
+    while($iTry <= 3) {
+      try {
+        if ($iTry > 1) echo "Retrying: " . $iTry . "<br/>\n";
+        $oResult = callRemote($this->remoteurl, $aData);
+        break;
+      } catch(Exception $e) {
+        echo "Error:" . $e->getMessage() . "<br/>\n";
+        $iTry++;
+        if ($iTry > 3) throw new Exception("Failed after retried: " . $e->getMessage());
+      }//exception
+    }
+    
     if (is_null($oResult)) {
       throw new Exception(__METHOD__ . ": Null Error: " . serialize($oResult));
     }
