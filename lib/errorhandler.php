@@ -27,7 +27,7 @@ function _errorHandler($errno, $errstr, $errfile, $errline)
       break;
     case E_NOTICE:
       echo "<b>E_NOTICE</b>$errfile($errline) $errstr<br />\n";
-      die();
+      //die();
       return true;
       break;
     case E_WARNING:
