@@ -15,6 +15,7 @@ $remoting = new HandyRemoteCopy($localdb, $remoteurl, "[remoteorsource-db-name]"
 
 //these 2 event is optional
 $remoting->addEvent("save", "onModx2Save");
+$remoting->addEvent("aftersave", "onModx2AfterSave");
 $remoting->addEvent("before_copydata", "onModx2CopyData");
 
 //tablename, separated by comma, empty for all table
@@ -67,6 +68,19 @@ function onModx2Save($sType, $sTable, & $aFields) {
       }
       break;
 
+    default:
+  }
+}
+
+function onModx2AfterSave($sType, $sTable, $iId, $aFields, & $oDB) {
+  if (is_null($aFields)) { return; } //null due to other event already cancel the insert/update
+  
+  switch(strtolower($sTable)) {
+    case "tablename":
+      if ($aFields["id"] <= 0) {
+        echo "Fixing ID: " . $iId . " to 0<br/>\n";
+        $oDB->getDBQuery("update " . $sTable . " set id=0 where id=" . $iId);
+      }
     default:
   }
 }

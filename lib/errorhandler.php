@@ -33,7 +33,8 @@ function _errorHandler($errno, $errstr, $errfile, $errline)
     case E_WARNING:
       echo "<b>E_WARNING</b>$errfile($errline) $errstr<br />\n";
       debug_print_backtrace();
-      die();
+      //ignoring cox file_get_contents on ssl error cannot pass this...
+      //die();
       return true;
       break;
     case E_STRICT:

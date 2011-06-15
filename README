@@ -1,14 +1,19 @@
 --------------------
 Project: FlexiSite
 --------------------
-Version: 0.9.4
-Released: Mar 10, 2011
+Version: 1.0.0
+Released: Jun 15, 2011
 Since: Mar 9, 2011
 Author: James Tan <james@mercstudio.com>
 
 This utilities have 2 functions:
  + to copy database from remote to local server
  + to update and retrieve ip of a given name to the remote server
+
+*Note: Possible problem with autonumber colume with id 0 as value.
+If this happen, mysql will auto convert number 0 to the next auto number, 
+which may cause problem to insert your existing data or linking issue.
+Please use aftersave event to rewrite the field after insert.
 
 --------------------------------------------
 * Copy database from remote to local server
@@ -80,6 +85,8 @@ Note: .htaccess is in effect for this to work
 --------------------------------------------
 
 Change-log:
+1.0.0:
++ added aftersave event
 0.9.4:
 + fix bug
 0.9.3:

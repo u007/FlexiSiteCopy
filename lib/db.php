@@ -153,6 +153,11 @@ class HandyDB {
     
     return $this->getDBQuery($sql);
   }
+  
+  function getLastId() {
+    $oDB = $this->getDB();
+    return mysql_insert_id($oDB);
+  }
 
   function getDB() {
     if (is_null($this->dbconn)) {

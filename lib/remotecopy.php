@@ -114,6 +114,14 @@ class HandyRemoteCopy {
         //if is null, do not insert
         if (! is_null($aSaveData)) {
           $oLocalDB->insert($sTable, $aSaveData);
+          $iNewId = $oLocalDB->getLastId();
+          
+          //calling event hooks
+          $aEvent = isset($this->aEvent["aftersave"])? $this->aEvent["aftersave"]: array();
+          $aSaveData = array_combine($aHeader, $aRow);
+          foreach($aEvent as $callback) {
+            call_user_func_array($callback, array("insert", $sTable, $iNewId, $aSaveData, $oLocalDB));
+          }
         }
         $iCnt++;
       }
