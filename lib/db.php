@@ -5,7 +5,9 @@ class HandyDB {
   public $dbtype, $dbhost, $dbname, $dbuser, $dbpass, $dbconn, $bDebug;
 
   public function __construct($dbname, $dbuser="", $dbpass="", $dbtype="mysql", $dbhost="localhost", $bDebug=false) {
-    HandyLogger::debug(__METHOD__ . ": " . print_r(func_get_args(),true));
+		$args = func_get_args();
+		unset($args[2]);
+    HandyLogger::debug(__METHOD__ . ": " . print_r($args,true));
     $this->dbname = $dbname;
     $this->dbhost = $dbhost;
     $this->dbtype = $dbtype;
@@ -152,6 +154,32 @@ class HandyDB {
     $sql = "INSERT INTO " . $this->delimitTable($sTable) . " (" . $sFields . ") VALUES (" . $sFieldValues . ")";
     
     return $this->getDBQuery($sql);
+  }
+  
+  function batchInsert($sTable, $aData) {
+    if (count($aData) < 1) return;
+    
+    $aCols = array_keys($aData[0]);
+    $sFields = "";
+    foreach($aCols as $sField) {
+      $sFields .= empty($sFields) ? "" : ",";
+      $sFields .= $this->delimitFieldName($sField);
+    }
+    
+    $sSQL = "";
+    foreach($aData as $aFields) {
+      $aCols = array_values($aFields);
+      $sFieldValues = "";
+      foreach($aCols as $sField) {
+        $sFieldValues .= empty($sFieldValues) ? "" : ",";
+        $sFieldValues .= "'" . $this->escFieldValue($sField) . "'";
+      }
+      $sSQL .= empty($sSQL) ? "": ",";
+      $sSQL .= "(" . $sFieldValues . ")";
+    }
+    
+    $sSQL = "INSERT INTO " . $this->delimitTable($sTable) . " (" . $sFields . ") VALUES " . $sSQL;
+    $this->getDBQuery($sSQL);
   }
   
   function getLastId() {

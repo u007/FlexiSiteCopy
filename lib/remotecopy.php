@@ -9,6 +9,8 @@ class HandyRemoteCopy {
   public $remoteurl, $remotedb, $remotedbuser, $remotedbpass="", $remotedbhost;
   public $bDebug = true;
   public $aEvent = array();
+  public $aNoBatch = array();
+  public $bDoBatch = true;
   
   public function __construct(HandyDB $oLocalDB, $remoteurl, $remotedb, $remotedbuser, $remotedbpass="", $remotedbhost="localhost") {
     $this->oLocalDB = & $oLocalDB;
@@ -17,6 +19,10 @@ class HandyRemoteCopy {
     $this->remotedbuser = $remotedbuser;
     $this->remotedbpass = $remotedbpass;
     $this->remotedbhost = $remotedbhost;
+  }
+  
+  public function addNoBatch($sTable) {
+    $this->aNoBatch[] = $sTable;
   }
 
   /**
@@ -97,8 +103,11 @@ class HandyRemoteCopy {
     $oData = $this->callRemote("getrows", array("table" => $sTable, "offset" => $iOffset, "limit" => $iLimit));
     $aHeader = $oData->return ? $oData->return[0]: array();
     
+    //no batch, if in array, meants dont batch this table
+    $bBatch = $this->bDoBatch && ! in_array($sTable, $this->aNoBatch);
     while($oData->status && count($oData->return) > 1 && (is_null($iMax) || (!is_null($iMax) && $iCnt > $iMax))) {
       //loop throw record and limit it by iMax
+      $aCacheData = array();
       for($iRow=1; $iRow < count($oData->return) && (is_null($iMax) || (!is_null($iMax) && $iCnt > $iMax)); $iRow++) {
         $aRow = $oData->return[$iRow];
         //decode utf
@@ -111,19 +120,30 @@ class HandyRemoteCopy {
         foreach($aEvent as $callback) {
           call_user_func_array($callback, array("insert", $sTable, &$aSaveData));
         }
+        
+        //todo batch processing for speed
         //if is null, do not insert
         if (! is_null($aSaveData)) {
-          $oLocalDB->insert($sTable, $aSaveData);
-          $iNewId = $oLocalDB->getLastId();
-          
-          //calling event hooks
-          $aEvent = isset($this->aEvent["aftersave"])? $this->aEvent["aftersave"]: array();
-          $aSaveData = array_combine($aHeader, $aRow);
-          foreach($aEvent as $callback) {
-            call_user_func_array($callback, array("insert", $sTable, $iNewId, $aSaveData, $oLocalDB));
+          if ($bBatch) {
+            $aCacheData[] = $aSaveData;
+          } else {
+            $oLocalDB->insert($sTable, $aSaveData);
+            $iNewId = $oLocalDB->getLastId();
+            
+            //calling event hooks
+            $aAfterSaveEvent = isset($this->aEvent["aftersave"])? $this->aEvent["aftersave"]: array();
+            $aSaveData = array_combine($aHeader, $aRow);
+            foreach($aAfterSaveEvent as $callback) {
+              call_user_func_array($callback, array("insert", $sTable, $iNewId, $aSaveData, $oLocalDB));
+            }
           }
         }
         $iCnt++;
+      }
+      
+      if ($bBatch) {
+        //todo store batch
+        $oLocalDB->batchInsert($sTable, $aCacheData);
       }
       $iOffset+= $iLimit;
       //smart break: return record+1 header

@@ -312,6 +312,9 @@ function getDB() {
       case "mysql":
         $oDBConn = mysql_connect($dbhost, $dbuser, $dbpass);
         mysql_select_db($dbname, $oDBConn);
+        
+        mysql_query("SET CHARACTER SET utf8", $oDBConn);
+        mysql_query("SET NAMES 'utf8'", $oDBConn);
         break;
       default:
         throw new Exception(__METHOD__ . ": connection failed");
