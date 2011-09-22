@@ -194,6 +194,7 @@ class HandyDB {
           HandyLogger::debug(__METHOD__ .": " . $this->dbhost . "," . $this->dbuser . "," . $this->dbpass);
           $this->dbconn = mysql_connect($this->dbhost, $this->dbuser, $this->dbpass);
           mysql_select_db($this->dbname, $this->dbconn);
+          mysql_set_charset("utf8", $this->dbconn);//support for unicode
           break;
         default:
           throw new Exception(__METHOD__ . ": Unknown database type: " . $this->dbtype);
